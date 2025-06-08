@@ -47,7 +47,7 @@ fractionmania/
 ### Prerequisites
 
 - Python 3.11
-- Node.js 20 (LTS) (or Node.js 20+)
+- Node.js 18+
 - AWS account (for DynamoDB and AWS Bedrock)
 - AWS credentials configured (see [AWS docs](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html)) (with access to AWS Bedrock)
 
@@ -70,7 +70,12 @@ fractionmania/
    # Edit .env with your AWS (DynamoDB and Bedrock) configuration
    ```
 
-4. Run the development server:
+4. Run DynamoDb Local on port 7999:
+   ```bash
+   java -Djava.library.path=./DynamoDBLocal_lib -jar ./DynamoDBLocal.jar -sharedDb -port 7999
+   ```
+
+5. Run the development server (default port 8000):
    ```bash
    uvicorn app.main:app --reload
    ```
@@ -87,7 +92,7 @@ fractionmania/
    npm install
    ```
 
-2. Start the development server:
+2. Start the development server (default port 5173):
    ```bash
    npm run dev
    ```

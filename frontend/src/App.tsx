@@ -1,21 +1,42 @@
-import React from 'react'
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import FractionPractice from './components/FractionPractice'
-import './App.css'
+import { Routes, Route, Link } from 'react-router-dom';
+import { ProgressProvider } from './contexts/ProgressContext';
+import { LevelSelection } from './components/LevelSelection';
+import { ComparisonExercise } from './components/exercises/ComparisonExercise';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>FractionMania</h1>
-      </header>
-      <FractionPractice />
-    </div>
-  )
+    <ProgressProvider>
+      <div className="min-h-screen bg-gray-100">
+        <header className="bg-white shadow">
+          <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center">
+              <Link to="/" className="text-3xl font-bold text-gray-900 hover:text-gray-700">
+                FractionMania
+              </Link>
+              <nav>
+                <Link 
+                  to="/" 
+                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Levels
+                </Link>
+              </nav>
+            </div>
+          </div>
+        </header>
+
+        <main>
+          <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <Routes>
+              <Route path="/" element={<LevelSelection />} />
+              <Route path="/level/:levelId" element={<ComparisonExercise />} />
+              <Route path="*" element={<div>Page not found</div>} />
+            </Routes>
+          </div>
+        </main>
+      </div>
+    </ProgressProvider>
+  );
 }
 
-export default App
+export default App;
