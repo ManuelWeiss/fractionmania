@@ -1,0 +1,33 @@
+.fraction-input-root {
+  font-size: 2rem;
+  font-weight: 700;
+  min-width: 3.5rem;
+}
+.fraction-input-mixed {
+  min-width: 6.5rem;
+}
+.fraction-input-fraction {
+  width: 3.5rem;
+}
+.fraction-input-num,
+.fraction-input-den,
+.fraction-input-whole {
+  font-size: 2rem;
+  font-weight: 700;
+}
+.fraction-input-bar {
+  border-bottom-width: 2px;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+/* Hide number input arrows for all browsers */
+input[type='number'],
+input[type='text']::-webkit-outer-spin-button,
+input[type='text']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'],
+input[type='text'] {
+  -moz-appearance: textfield;
+} 

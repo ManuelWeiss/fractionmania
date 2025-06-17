@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useProgress } from '../../contexts/ProgressContext';
 import type { Level } from '../../types/progress';
@@ -28,28 +28,6 @@ export function BaseExercise({
   const { progress, updateProgress } = useProgress();
   const [isComplete, setIsComplete] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-
-  // Verify level access
-  useEffect(() => {
-    if (!progress) return;
-
-    const levelOrder = ['comparison', 'simplification', 'addition', 'subtraction', 'multiplication', 'division'];
-    const currentLevelIndex = levelOrder.indexOf(progress.current_level);
-    const requestedLevelIndex = levelOrder.indexOf(levelId as Level);
-    
-    // Allow access if:
-    // 1. This is the current level
-    // 2. This is a completed level
-    // 3. This is the first level (comparison)
-    const hasAccess = 
-      levelId === progress.current_level ||
-      progress.completed_levels.includes(levelId as Level) ||
-      levelId === 'comparison';
-
-    if (!hasAccess) {
-      navigate('/');
-    }
-  }, [progress, levelId, navigate]);
 
   const handleComplete = async (earnedScore: number) => {
     try {

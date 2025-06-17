@@ -1,7 +1,7 @@
 import { Routes, Route, Link } from 'react-router-dom';
 import { ProgressProvider } from './contexts/ProgressContext';
 import { LevelSelection } from './components/LevelSelection';
-import { ComparisonExercise } from './components/exercises/ComparisonExercise';
+import { LevelRouter } from './components/LevelRouter';
 
 function App() {
   return (
@@ -29,7 +29,7 @@ function App() {
           <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <Routes>
               <Route path="/" element={<LevelSelection />} />
-              <Route path="/level/:levelId" element={<ComparisonExercise />} />
+              <Route path="/level/:levelId" element={<LevelRouter />} />
               <Route path="*" element={<div>Page not found</div>} />
             </Routes>
           </div>

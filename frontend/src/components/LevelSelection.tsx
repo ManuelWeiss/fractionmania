@@ -40,15 +40,13 @@ export function LevelSelection() {
   }
 
   const getLevelStatus = (level: Level) => {
-    if (!progress) return { isLocked: true, isCompleted: false, score: undefined };
+    if (!progress) return { isLocked: false, isCompleted: false, score: undefined };
     
     const isCompleted = progress.completed_levels.includes(level);
     const levelProgress = progress.progress[level];
-    const currentLevelIndex = LEVEL_ORDER.indexOf(progress.current_level);
-    const levelIndex = LEVEL_ORDER.indexOf(level);
     
     return {
-      isLocked: levelIndex > currentLevelIndex,
+      isLocked: false,
       isCompleted,
       score: levelProgress?.score
     };
