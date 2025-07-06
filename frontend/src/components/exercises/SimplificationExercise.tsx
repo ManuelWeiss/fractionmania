@@ -1,27 +1,21 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { BaseExercise } from './BaseExercise'
-import { gcd, generateRandomFraction } from './exerciseUtils'
+import { gcd, parseSimplificationLine, shuffleArray } from './exerciseUtils'
 import { FractionInput } from './FractionInput'
 import React from 'react'
 
 const TOTAL_QUESTIONS = 20
-
-function generateFraction() {
-  const { numerator, denominator } = generateRandomFraction()
-  const divisor = gcd(numerator, denominator)
-  return {
-    numerator,
-    denominator,
-    simplestNumerator: numerator / divisor,
-    simplestDenominator: denominator / divisor,
-  }
+type Difficulty = 'easy' | 'advanced' | 'hard'
+const DIFFICULTY_LABELS: Record<Difficulty, string> = {
+  easy: 'Easy',
+  advanced: 'Advanced',
+  hard: 'Hard',
 }
 
 export function SimplificationExercise() {
+  const [difficulty, setDifficulty] = useState<Difficulty>('easy')
   const [current, setCurrent] = useState(0)
-  const [questions, setQuestions] = useState(() =>
-    Array.from({ length: TOTAL_QUESTIONS }, generateFraction)
-  )
+  const [questions, setQuestions] = useState<any[]>([])
   const [userNum, setUserNum] = useState('')
   const [userDen, setUserDen] = useState('')
   const [userWhole, setUserWhole] = useState('')
@@ -29,6 +23,49 @@ export function SimplificationExercise() {
   const [score, setScore] = useState(0)
   const [completed, setCompleted] = useState(false)
   const [answers, setAnswers] = useState<{ correct: boolean }[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [started, setStarted] = useState(false)
+
+  useEffect(() => {
+    async function fetchQuestions() {
+      try {
+        setLoading(true)
+        setError(null)
+        const resp = await fetch(`/simplification-${difficulty}.txt`)
+        if (!resp.ok) throw new Error('Failed to load questions')
+        const text = await resp.text()
+        const lines = text
+          .split('\n')
+          .map((l) => l.trim())
+          .filter(Boolean)
+
+        // parse lines and shuffle them
+        const parsed = lines.map(parseSimplificationLine)
+        const shuffled = shuffleArray(parsed)
+
+        // Add simplestNumerator and simplestDenominator for checking
+        const withSimplest = shuffled.map((q) => {
+          const divisor = gcd(q.numerator, q.denominator)
+          return {
+            ...q,
+            simplestNumerator: q.numerator / divisor,
+            simplestDenominator: q.denominator / divisor,
+          }
+        })
+        setQuestions(withSimplest.slice(0, TOTAL_QUESTIONS))
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          setError(e.message)
+        } else {
+          setError('Failed to load questions')
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchQuestions()
+  }, [difficulty])
 
   const handleSubmit = useCallback(() => {
     const q = questions[current]
@@ -53,7 +90,6 @@ export function SimplificationExercise() {
   }
 
   const handleRestart = () => {
-    setQuestions(Array.from({ length: TOTAL_QUESTIONS }, generateFraction))
     setCurrent(0)
     setUserNum('')
     setUserDen('')
@@ -62,6 +98,11 @@ export function SimplificationExercise() {
     setScore(0)
     setCompleted(false)
     setAnswers([])
+    setStarted(false)
+    setError(null)
+    setLoading(true)
+    // Refetch questions by resetting difficulty to itself
+    setDifficulty((d) => d)
   }
 
   const handleComplete = async () => {
@@ -82,13 +123,68 @@ export function SimplificationExercise() {
     if (isCorrect === false) setIsCorrect(null)
   }
 
-  if (current >= TOTAL_QUESTIONS || completed) {
+  const handleSelectDifficulty = (diff: Difficulty) => {
+    setDifficulty(diff)
+    setCurrent(0)
+    setUserNum('')
+    setUserDen('')
+    setUserWhole('')
+    setIsCorrect(null)
+    setScore(0)
+    setCompleted(false)
+    setAnswers([])
+    setStarted(false)
+    setError(null)
+    setLoading(true)
+  }
+
+  if (!started) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[300px] space-y-8">
+        <div>
+          <h2 className="text-2xl font-bold mb-4">Select Difficulty</h2>
+          <div className="flex space-x-4">
+            {(['easy', 'advanced', 'hard'] as Difficulty[]).map((diff) => (
+              <button
+                key={diff}
+                onClick={() => {
+                  setDifficulty(diff)
+                  setStarted(true)
+                }}
+                className={`px-6 py-2 rounded-lg font-semibold border-2 transition-colors duration-200 ${difficulty === diff ? 'bg-blue-600 text-white border-blue-700' : 'bg-white text-gray-800 border-gray-300 hover:bg-blue-100'}`}
+              >
+                {DIFFICULTY_LABELS[diff]}
+              </button>
+            ))}
+          </div>
+        </div>
+        <button
+          onClick={() => setStarted(true)}
+          className="mt-8 px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 disabled:opacity-50"
+          disabled={loading || !!error}
+        >
+          Start Exercise
+        </button>
+        {loading && <div className="text-lg text-gray-600">Loading questions...</div>}
+        {error && <div className="text-red-600">{error}</div>}
+      </div>
+    )
+  }
+
+  if (loading) {
+    return <div className="text-center py-12 text-lg">Loading questions...</div>
+  }
+  if (error) {
+    return <div className="text-center py-12 text-red-600">{error}</div>
+  }
+
+  if (current >= questions.length || completed) {
     const correctCount = answers.filter((a) => a.correct).length + (isCorrect ? 1 : 0)
     return (
       <BaseExercise
         level="simplification"
         title="Simplify Fractions"
-        description="Enter the simplest form of the given fraction."
+        description={`Enter the simplest form of the given fraction. (Difficulty: ${DIFFICULTY_LABELS[difficulty]})`}
         onComplete={handleComplete}
         maxScore={TOTAL_QUESTIONS * 5}
         currentScore={score}
@@ -96,10 +192,10 @@ export function SimplificationExercise() {
         <div className="text-center space-y-6">
           <h2 className="text-2xl font-bold text-gray-900">Session Complete!</h2>
           <p className="text-lg text-gray-700">
-            You got {correctCount} out of {TOTAL_QUESTIONS} correct.
+            You got {correctCount} out of {questions.length} correct.
           </p>
           <p className="text-lg text-gray-700">
-            Total Score: {score} / {TOTAL_QUESTIONS * 5}
+            Total Score: {score} / {questions.length * 5}
           </p>
           <button
             onClick={handleRestart}
@@ -107,6 +203,18 @@ export function SimplificationExercise() {
           >
             Try Again
           </button>
+          <div className="mt-6">
+            <span className="mr-2 text-gray-700">Change difficulty:</span>
+            {(['easy', 'advanced', 'hard'] as Difficulty[]).map((diff) => (
+              <button
+                key={diff}
+                onClick={() => handleSelectDifficulty(diff)}
+                className={`px-4 py-1 rounded font-semibold border-2 mx-1 transition-colors duration-200 ${difficulty === diff ? 'bg-blue-600 text-white border-blue-700' : 'bg-white text-gray-800 border-gray-300 hover:bg-blue-100'}`}
+              >
+                {DIFFICULTY_LABELS[diff]}
+              </button>
+            ))}
+          </div>
         </div>
       </BaseExercise>
     )
@@ -118,8 +226,8 @@ export function SimplificationExercise() {
     <BaseExercise
       level="simplification"
       title="Simplify Fractions"
-      description="Enter the simplest form of the given fraction."
-      onComplete={() => handleComplete(score)}
+      description={`Enter the simplest form of the given fraction. (Difficulty: ${DIFFICULTY_LABELS[difficulty]})`}
+      onComplete={handleComplete}
       maxScore={TOTAL_QUESTIONS * 5}
       currentScore={score}
     >

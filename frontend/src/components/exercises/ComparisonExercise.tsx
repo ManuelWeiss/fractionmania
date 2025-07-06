@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { BaseExercise } from './BaseExercise'
+import { shuffleArray } from './exerciseUtils'
 import type { Level } from '../../types/progress'
 
 type Answer = 'left' | 'right' | 'equal'
@@ -97,8 +98,11 @@ export function ComparisonExercise() {
           .split('\n')
           .map((l) => l.trim())
           .filter(Boolean)
+
+          // parse lines and shuffle them
         const parsed = lines.map(parseComparisonLine)
-        setQuestions(parsed.slice(0, TOTAL_QUESTIONS))
+        const shuffled = shuffleArray(parsed)
+        setQuestions(shuffled.slice(0, TOTAL_QUESTIONS))
       } catch (e: unknown) {
         if (e instanceof Error) {
           setError(e.message)
