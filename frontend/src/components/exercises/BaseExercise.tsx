@@ -1,62 +1,41 @@
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useProgress } from '../../contexts/ProgressContext';
-import type { Level } from '../../types/progress';
-import { ArrowLeftIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useProgress } from '../../contexts/ProgressContext'
+import type { Level } from '../../types/progress'
+import { ArrowLeftIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid'
+import React from 'react'
 
 interface BaseExerciseProps {
-  level: Level;
-  title: string;
-  description: string;
-  onComplete: (score: number) => Promise<void>;
-  children: React.ReactNode;
-  maxScore?: number;
-  currentScore?: number;
+  level: Level
+  title: string
+  description: string
+  onComplete: (score: number) => Promise<void>
+  children: React.ReactNode
+  maxScore?: number
+  currentScore?: number
 }
 
-export function BaseExercise({ 
-  level, 
-  title, 
-  description, 
-  onComplete, 
+export function BaseExercise({
+  level,
+  title,
+  description,
   children,
   maxScore = 100,
-  currentScore = 0
+  currentScore = 0,
 }: BaseExerciseProps) {
-  const navigate = useNavigate();
-  const { levelId } = useParams<{ levelId: string }>();
-  const { progress, updateProgress } = useProgress();
-  const [isComplete, setIsComplete] = useState(false);
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-
-  const handleComplete = async (earnedScore: number) => {
-    try {
-      setIsComplete(true);
-      setFeedback({ type: 'success', message: 'Great job! Level completed!' });
-      
-      // Update progress
-      await updateProgress(level, earnedScore, true);
-      
-      // Call the specific level's completion handler
-      await onComplete(earnedScore);
-    } catch (error) {
-      setFeedback({ 
-        type: 'error', 
-        message: 'Failed to save progress. Please try again.' 
-      });
-    }
-  };
-
-  const handleError = (message: string) => {
-    setFeedback({ type: 'error', message });
-  };
+  const navigate = useNavigate()
+  const { progress } = useProgress()
+  const [isComplete] = useState(false)
+  const [feedback] = useState<{ type: 'success' | 'error'; message: string } | null>(
+    null
+  )
 
   if (!progress) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
       </div>
-    );
+    )
   }
 
   return (
@@ -78,7 +57,9 @@ export function BaseExercise({
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium text-gray-700">Progress</span>
-          <span className="text-sm font-medium text-gray-700">{currentScore}/{maxScore} points</span>
+          <span className="text-sm font-medium text-gray-700">
+            {currentScore}/{maxScore} points
+          </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2.5">
           <div
@@ -117,9 +98,7 @@ export function BaseExercise({
       )}
 
       {/* Exercise Content */}
-      <div className="bg-white shadow rounded-lg p-6">
-        {children}
-      </div>
+      <div className="bg-white shadow rounded-lg p-6">{children}</div>
 
       {/* Level Navigation */}
       {isComplete && (
@@ -141,5 +120,5 @@ export function BaseExercise({
         </div>
       )}
     </div>
-  );
-} 
+  )
+}

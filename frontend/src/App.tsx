@@ -1,7 +1,7 @@
-import { Routes, Route, Link } from 'react-router-dom';
-import { ProgressProvider } from './contexts/ProgressContext';
-import { LevelSelection } from './components/LevelSelection';
-import { LevelRouter } from './components/LevelRouter';
+import { Routes, Route, Link } from 'react-router-dom'
+import { ProgressProvider } from './contexts/ProgressContext'
+import { LevelSelection } from './components/LevelSelection'
+import { LevelRouter } from './components/LevelRouter'
 
 function App() {
   return (
@@ -14,8 +14,8 @@ function App() {
                 FractionMania
               </Link>
               <nav>
-                <Link 
-                  to="/" 
+                <Link
+                  to="/"
                   className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Levels
@@ -36,7 +36,7 @@ function App() {
         </main>
       </div>
     </ProgressProvider>
-  );
+  )
 }
 
-export default App;
+export default App

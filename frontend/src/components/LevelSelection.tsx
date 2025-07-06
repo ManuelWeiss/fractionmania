@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router-dom';
-import { useProgress } from '../contexts/ProgressContext';
-import { LevelCard } from './LevelCard';
-import type { Level } from '../types/progress';
+import { useNavigate } from 'react-router-dom'
+import { useProgress } from '../contexts/ProgressContext'
+import { LevelCard } from './LevelCard'
+import type { Level } from '../types/progress'
 
 const LEVEL_ORDER: Level[] = [
   'comparison',
@@ -9,19 +9,19 @@ const LEVEL_ORDER: Level[] = [
   'addition',
   'subtraction',
   'multiplication',
-  'division'
-];
+  'division',
+]
 
 export function LevelSelection() {
-  const navigate = useNavigate();
-  const { progress, isLoading, error } = useProgress();
+  const navigate = useNavigate()
+  const { progress, isLoading, error } = useProgress()
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -36,25 +36,25 @@ export function LevelSelection() {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   const getLevelStatus = (level: Level) => {
-    if (!progress) return { isLocked: false, isCompleted: false, score: undefined };
-    
-    const isCompleted = progress.completed_levels.includes(level);
-    const levelProgress = progress.progress[level];
-    
+    if (!progress) return { isLocked: false, isCompleted: false, score: undefined }
+
+    const isCompleted = progress.completed_levels.includes(level)
+    const levelProgress = progress.progress[level]
+
     return {
       isLocked: false,
       isCompleted,
-      score: levelProgress?.score
-    };
-  };
+      score: levelProgress?.score,
+    }
+  }
 
   const handleLevelClick = (level: Level) => {
-    navigate(`/level/${level}`);
-  };
+    navigate(`/level/${level}`)
+  }
 
   return (
     <div className="space-y-6">
@@ -67,7 +67,7 @@ export function LevelSelection() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {LEVEL_ORDER.map((level) => {
-          const { isLocked, isCompleted, score } = getLevelStatus(level);
+          const { isLocked, isCompleted, score } = getLevelStatus(level)
           return (
             <LevelCard
               key={level}
@@ -77,9 +77,9 @@ export function LevelSelection() {
               score={score}
               onClick={() => handleLevelClick(level)}
             />
-          );
+          )
         })}
       </div>
     </div>
-  );
-} 
+  )
+}

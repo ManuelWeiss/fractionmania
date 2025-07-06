@@ -1,16 +1,16 @@
-import React from 'react';
-import './FractionInput.css';
+import React from 'react'
+import './FractionInput.css'
 
 interface FractionInputProps {
-  numerator: string;
-  denominator: string;
-  onNumeratorChange: (value: string) => void;
-  onDenominatorChange: (value: string) => void;
-  disabled?: boolean;
-  className?: string;
-  wholeNumber?: string;
-  onWholeNumberChange?: (value: string) => void;
-  showWholeNumber?: boolean;
+  numerator: string
+  denominator: string
+  onNumeratorChange: (value: string) => void
+  onDenominatorChange: (value: string) => void
+  disabled?: boolean
+  className?: string
+  wholeNumber?: string
+  onWholeNumberChange?: (value: string) => void
+  showWholeNumber?: boolean
 }
 
 export function FractionInput({
@@ -25,14 +25,16 @@ export function FractionInput({
   showWholeNumber = false,
 }: FractionInputProps) {
   return (
-    <span className={`fraction-input-root inline-flex items-center text-2xl font-bold ${className} ${showWholeNumber ? 'fraction-input-mixed' : ''}`}>
+    <span
+      className={`fraction-input-root inline-flex items-center text-2xl font-bold ${className} ${showWholeNumber ? 'fraction-input-mixed' : ''}`}
+    >
       {showWholeNumber && (
         <input
           type="text"
           inputMode="numeric"
           pattern="[0-9]*"
           value={wholeNumber}
-          onChange={e => onWholeNumberChange?.(e.target.value)}
+          onChange={(e) => onWholeNumberChange?.(e.target.value)}
           className="fraction-input-whole w-10 text-center border-none focus:ring-0 bg-transparent hide-arrows mr-1"
           placeholder=""
           disabled={disabled}
@@ -45,7 +47,7 @@ export function FractionInput({
           inputMode="numeric"
           pattern="[0-9]*"
           value={numerator}
-          onChange={e => onNumeratorChange(e.target.value)}
+          onChange={(e) => onNumeratorChange(e.target.value)}
           className="fraction-input-num w-full text-center border-none border-b-2 border-gray-900 focus:ring-0 focus:border-blue-500 bg-transparent hide-arrows"
           placeholder=""
           disabled={disabled}
@@ -57,7 +59,7 @@ export function FractionInput({
           inputMode="numeric"
           pattern="[0-9]*"
           value={denominator}
-          onChange={e => onDenominatorChange(e.target.value)}
+          onChange={(e) => onDenominatorChange(e.target.value)}
           className="fraction-input-den w-full text-center border-none focus:ring-0 bg-transparent hide-arrows"
           placeholder=""
           disabled={disabled}
@@ -75,5 +77,5 @@ export function FractionInput({
         }
       `}</style>
     </span>
-  );
-} 
+  )
+}
