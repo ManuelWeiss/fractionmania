@@ -10,6 +10,6 @@ boto3
 botocore
 aioboto3
 aiobotocore
-pytest==7.4.3
+pytest==9.0.3
 httpx==0.25.2
 email-validator==2.1.0.post1 
